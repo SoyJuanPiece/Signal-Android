@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
+import kotlinx.coroutines.BuildersKt
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.livedata.Store
 
@@ -26,13 +28,15 @@ class PrivacySettingsViewModel(
   }
 
   fun setReadReceiptsEnabled(enabled: Boolean) {
-    sharedPreferences.edit().putBoolean(TextSecurePreferences.READ_RECEIPTS_PREF, enabled).apply()
+    BuildersKt.runBlocking(kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                             { scope, continuation -> SupabaseUserSettings.INSTANCE.updateReadReceipts(enabled, continuation) })
     repository.syncReadReceiptState()
     refresh()
   }
 
   fun setTypingIndicatorsEnabled(enabled: Boolean) {
-    sharedPreferences.edit().putBoolean(TextSecurePreferences.TYPING_INDICATORS, enabled).apply()
+    BuildersKt.runBlocking(kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                             { scope, continuation -> SupabaseUserSettings.INSTANCE.updateTypingIndicators(enabled, continuation) })
     repository.syncTypingIndicatorsState()
     refresh()
   }
@@ -47,20 +51,9 @@ class PrivacySettingsViewModel(
     refresh()
   }
 
-  fun togglePaymentLock(enable: Boolean) {
-    SignalStore.payments.paymentLock = enable
-    refresh()
-  }
 
-  fun setObsoletePasswordTimeoutEnabled(enabled: Boolean) {
-    SignalStore.settings.passphraseTimeoutEnabled = enabled
-    refresh()
-  }
 
-  fun setObsoletePasswordTimeout(minutes: Int) {
-    SignalStore.settings.passphraseTimeout = minutes
-    refresh()
-  }
+
 
   fun refresh() {
     store.update(this::updateState)
@@ -69,17 +62,17 @@ class PrivacySettingsViewModel(
   private fun getState(): PrivacySettingsState {
     return PrivacySettingsState(
       blockedCount = 0,
-      readReceipts = TextSecurePreferences.isReadReceiptsEnabled(AppDependencies.application),
-      typingIndicators = TextSecurePreferences.isTypingIndicatorsEnabled(AppDependencies.application),
-      screenLock = SignalStore.settings.screenLockEnabled,
-      screenLockActivityTimeout = SignalStore.settings.screenLockTimeout,
+      readReceipts = SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled(),
+      typingIndicators = SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled(),
+      screenLock = false,
+      screenLockActivityTimeout = 0L,
       screenSecurity = TextSecurePreferences.isScreenSecurityEnabled(AppDependencies.application),
       incognitoKeyboard = TextSecurePreferences.isIncognitoKeyboardEnabled(AppDependencies.application),
-      paymentLock = SignalStore.payments.paymentLock,
-      isObsoletePasswordEnabled = !SignalStore.settings.passphraseDisabled,
-      isObsoletePasswordTimeoutEnabled = SignalStore.settings.passphraseTimeoutEnabled,
-      obsoletePasswordTimeout = SignalStore.settings.passphraseTimeout,
-      universalExpireTimer = SignalStore.settings.universalExpireTimer
+      paymentLock = false,
+      isObsoletePasswordEnabled = false,
+      isObsoletePasswordTimeoutEnabled = false,
+      obsoletePasswordTimeout = 0,
+      universalExpireTimer = 0
     )
   }
 
