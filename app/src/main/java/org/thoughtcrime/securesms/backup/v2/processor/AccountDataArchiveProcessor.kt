@@ -45,7 +45,9 @@ import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.Environment
 import org.thoughtcrime.securesms.util.ProfileUtil
 import org.thoughtcrime.securesms.util.TextSecurePreferences
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.webrtc.CallDataMode
+import kotlinx.coroutines.BuildersKt
 import org.whispersystems.signalservice.api.push.UsernameLinkComponents
 import org.whispersystems.signalservice.api.storage.IAPSubscriptionId.AppleIAPOriginalTransactionId
 import org.whispersystems.signalservice.api.storage.IAPSubscriptionId.GooglePlayBillingPurchaseToken
@@ -107,8 +109,8 @@ object AccountDataArchiveProcessor {
           },
           accountSettings = AccountData.AccountSettings(
             storyViewReceiptsEnabled = signalStore.storyValues.viewedReceiptsEnabled,
-            typingIndicators = TextSecurePreferences.isTypingIndicatorsEnabled(context),
-            readReceipts = TextSecurePreferences.isReadReceiptsEnabled(context),
+            typingIndicators = SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled(),
+            readReceipts = SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled(),
             sealedSenderIndicators = TextSecurePreferences.isShowUnidentifiedDeliveryIndicatorsEnabled(context),
             allowSealedSenderFromAnyone = TextSecurePreferences.isUniversalUnidentifiedAccess(context),
             linkPreviews = signalStore.settingsValues.isLinkPreviewsEnabled,
@@ -259,8 +261,10 @@ object AccountDataArchiveProcessor {
   }
 
   private fun importSettings(context: Context, settings: AccountData.AccountSettings, importState: ImportState) {
-    TextSecurePreferences.setReadReceiptsEnabled(context, settings.readReceipts)
-    TextSecurePreferences.setTypingIndicatorsEnabled(context, settings.typingIndicators)
+    BuildersKt.runBlocking(kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                             (scope, continuation) -> SupabaseUserSettings.INSTANCE.updateReadReceipts(settings.readReceipts, continuation));
+    BuildersKt.runBlocking(kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                             (scope, continuation) -> SupabaseUserSettings.INSTANCE.updateTypingIndicators(settings.typingIndicators, continuation));
     TextSecurePreferences.setShowUnidentifiedDeliveryIndicatorsEnabled(context, settings.sealedSenderIndicators)
     TextSecurePreferences.setIsUniversalUnidentifiedAccess(context, settings.allowSealedSenderFromAnyone)
     SignalStore.settings.isLinkPreviewsEnabled = settings.linkPreviews
