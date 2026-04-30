@@ -11,7 +11,6 @@ plugins {
   alias(libs.plugins.jetbrains.kotlin.jvm) apply false
   alias(libs.plugins.compose.compiler) apply false
   alias(libs.plugins.ktlint)
-  alias(benchmarkLibs.plugins.baselineprofile) apply false
 }
 
 buildscript {
@@ -37,7 +36,6 @@ buildscript {
       exclude(group = "com.squareup.wire", module = "wire-grpc-server-generator")
       exclude(group = "io.outfoxx", module = "swiftpoet")
     }
-    classpath(libs.androidx.benchmark.gradle.plugin)
     classpath(files("$rootDir/wire-handler/wire-handler-1.0.0.jar"))
     classpath(libs.com.google.devtools.ksp.gradle.plugin)
   }

@@ -14,7 +14,6 @@ plugins {
   alias(libs.plugins.ktlint)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.kotlinx.serialization)
-  alias(benchmarkLibs.plugins.baselineprofile)
   id("androidx.navigation.safeargs")
   id("kotlin-parcelize")
   id("com.squareup.wire")
@@ -51,7 +50,6 @@ val localProperties: Properties? = if (localPropertiesFile.exists()) {
   null
 }
 val quickstartCredentialsDir: String? = localProperties?.getProperty("quickstart.credentials.dir")
-val benchmarkBackupFile: String? = localProperties?.getProperty("benchmark.backup.file")
 
 val selectableVariants = listOf(
   "nightlyProdSpinner",
@@ -62,9 +60,6 @@ val selectableVariants = listOf(
   "playProdSpinner",
   "playProdCanary",
   "playProdPerf",
-  "playProdMocked",
-  "playProdNonMinifiedMocked",
-  "playProdBenchmark",
   "playProdInstrumentation",
   "playProdRelease",
   "playStagingDebug",
@@ -368,33 +363,6 @@ android {
       buildConfigField("boolean", "TRACING_ENABLED", "true")
     }
 
-    create("benchmark") {
-      initWith(getByName("debug"))
-      isDefault = false
-      isDebuggable = false
-      isMinifyEnabled = true
-      matchingFallbacks += "debug"
-      applicationIdSuffix = ".benchmark"
-
-      buildConfigField("String", "BUILD_VARIANT_TYPE", "\"Benchmark\"")
-      buildConfigField("boolean", "TRACING_ENABLED", "true")
-      buildConfigField("String[]", "UNIDENTIFIED_SENDER_TRUST_ROOTS", "new String[]{ \"BVT/2gHqbrG1xzuIypLIOjFgMtihrMld1/5TGADL6Dhv\"}")
-
-      manifestPlaceholders["applicationClass"] = "org.thoughtcrime.securesms.BenchmarkApplicationContext"
-    }
-
-    create("mocked") {
-      initWith(getByName("debug"))
-      isDefault = false
-      isDebuggable = false
-      isMinifyEnabled = true
-      matchingFallbacks += "debug"
-      buildConfigField("String", "BUILD_VARIANT_TYPE", "\"Benchmark\"")
-      buildConfigField("boolean", "TRACING_ENABLED", "true")
-
-      manifestPlaceholders["applicationClass"] = "org.thoughtcrime.securesms.ApplicationContext"
-    }
-
     create("canary") {
       initWith(getByName("debug"))
       isDefault = false
@@ -545,15 +513,6 @@ android {
       }
       variant.sources.assets?.addGeneratedSourceDirectory(taskProvider) { it.outputDir }
     }
-
-    onVariants(selector().withBuildType("benchmark")) { variant ->
-      val taskProvider = tasks.register<CopyBenchmarkBackupTask>("copyBenchmarkBackup${variant.name.capitalize()}") {
-        if (benchmarkBackupFile != null) {
-          inputFile.set(File(benchmarkBackupFile))
-        }
-      }
-      variant.sources.assets?.addGeneratedSourceDirectory(taskProvider) { it.outputDir }
-    }
   }
 
   val releaseDir = "$projectDir/src/release/java"
@@ -565,41 +524,6 @@ android {
       java.srcDir(path)
     }
   }
-
-  sourceSets {
-    getByName("mocked") {
-      java.srcDir("$projectDir/src/benchmarkShared/java")
-      manifest.srcFile("$projectDir/src/benchmarkShared/AndroidManifest.xml")
-    }
-
-    getByName("benchmark") {
-      java.srcDir("$projectDir/src/benchmarkShared/java")
-      manifest.srcFile("$projectDir/src/benchmarkShared/AndroidManifest.xml")
-    }
-  }
-
-  applicationVariants.configureEach {
-    outputs.configureEach {
-      if (this is com.android.build.gradle.internal.api.BaseVariantOutputImpl) {
-        val fileVersionName = versionName.substringBefore(" |")
-        outputFileName = outputFileName.replace(".apk", "-$fileVersionName.apk")
-      }
-    }
-  }
-}
-
-baselineProfile {
-  warnings {
-    disabledVariants = false
-  }
-
-  mergeIntoMain = true
-
-  variants.create("mocked") {
-    from(project(":baseline-profile"))
-  }
-
-  dexLayoutOptimization = false
 }
 
 dependencies {
@@ -923,29 +847,5 @@ abstract class CopyQuickstartCredentialsTask : DefaultTask() {
     val dest = outputDir.get().asFile.resolve("quickstart")
     dest.mkdirs()
     chosen.copyTo(dest.resolve(chosen.name), overwrite = true)
-  }
-}
-
-abstract class CopyBenchmarkBackupTask : DefaultTask() {
-  @get:InputFile
-  @get:Optional
-  abstract val inputFile: RegularFileProperty
-
-  @get:OutputDirectory
-  abstract val outputDir: DirectoryProperty
-
-  @TaskAction
-  fun copy() {
-    val dest = outputDir.get().asFile.resolve("backups")
-    dest.mkdirs()
-
-    if (!inputFile.isPresent) {
-      logger.lifecycle("benchmark.backup.file is not set in local.properties. Benchmark tests using backup data will crash at runtime.")
-      return
-    }
-
-    val backupFile = inputFile.get().asFile
-    logger.lifecycle("Using benchmark backup: ${backupFile.absolutePath} (${backupFile.length() / 1024}KB)")
-    backupFile.copyTo(dest.resolve("backup.binproto"), overwrite = true)
   }
 }
