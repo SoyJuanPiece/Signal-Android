@@ -47,6 +47,7 @@ import org.thoughtcrime.securesms.util.EarlyMessageCacheEntry
 import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.SignalLocalMetrics
 import org.thoughtcrime.securesms.util.SignalTrace
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
 import org.whispersystems.signalservice.api.push.DistributionId
@@ -559,7 +560,7 @@ open class MessageContentProcessor(private val context: Context) {
     typingMessage: TypingMessage,
     senderRecipient: Recipient
   ) {
-    if (!TextSecurePreferences.isTypingIndicatorsEnabled(context)) {
+    if (!SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled()) {
       return
     }
 

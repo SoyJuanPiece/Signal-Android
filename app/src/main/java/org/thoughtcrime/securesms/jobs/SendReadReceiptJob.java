@@ -23,6 +23,8 @@ import org.thoughtcrime.securesms.recipients.RecipientId;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.transport.UndeliverableMessageException;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.SupabaseUserSettings;
+import kotlinx.coroutines.BuildersKt;
 import org.signal.core.util.Util;
 import org.whispersystems.signalservice.api.SignalServiceMessageSender;
 import org.whispersystems.signalservice.api.crypto.ContentHint;
@@ -98,7 +100,7 @@ public class SendReadReceiptJob extends BaseJob {
    * maximum size.
    */
   public static void enqueue(long threadId, @NonNull RecipientId recipientId, List<MarkedMessageInfo> markedMessageInfos) {
-    if (!TextSecurePreferences.isReadReceiptsEnabled(AppDependencies.getApplication())) {
+    if (!SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled()) {
       return;
     }
 
@@ -149,7 +151,7 @@ public class SendReadReceiptJob extends BaseJob {
       throw new NotPushRegisteredException();
     }
 
-    if (!TextSecurePreferences.isReadReceiptsEnabled(context) || messageSentTimestamps.isEmpty()) return;
+    if (!SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled() || messageSentTimestamps.isEmpty()) return;
 
     if (!RecipientUtil.isMessageRequestAccepted(threadId)) {
       Log.w(TAG, "Refusing to send receipts to untrusted recipient");

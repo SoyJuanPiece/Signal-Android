@@ -14,6 +14,7 @@ import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.util.EarlyMessageCacheEntry
 import org.thoughtcrime.securesms.util.SignalTrace
 import org.thoughtcrime.securesms.util.TextSecurePreferences
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
 import org.whispersystems.signalservice.internal.push.Content
 import org.whispersystems.signalservice.internal.push.Envelope
@@ -78,7 +79,7 @@ object ReceiptMessageProcessor {
     earlyMessageCacheEntry: EarlyMessageCacheEntry?,
     batchCache: BatchCache
   ) {
-    if (!TextSecurePreferences.isReadReceiptsEnabled(context)) {
+    if (!SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled()) {
       log(envelope.clientTimestamp!!, "Ignoring read receipts for IDs: " + readReceipt.timestamp.joinToString(", "))
       return
     }
@@ -113,7 +114,7 @@ object ReceiptMessageProcessor {
     senderRecipientId: RecipientId,
     earlyMessageCacheEntry: EarlyMessageCacheEntry?
   ) {
-    val readReceipts = TextSecurePreferences.isReadReceiptsEnabled(context)
+    val readReceipts = SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled()
     val storyViewedReceipts = SignalStore.story.viewedReceiptsEnabled
 
     if (!readReceipts && !storyViewedReceipts) {
@@ -125,7 +126,7 @@ object ReceiptMessageProcessor {
 
     val missingTargetTimestamps: Set<Long> = if (readReceipts && storyViewedReceipts) {
       SignalDatabase.messages.incrementViewedReceiptCounts(viewedReceipt.timestamp, senderRecipientId, envelope.clientTimestamp!!)
-    } else if (readReceipts) {
+    } else if (SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled()) {
       SignalDatabase.messages.incrementViewedNonStoryReceiptCounts(viewedReceipt.timestamp, senderRecipientId, envelope.clientTimestamp!!)
     } else {
       SignalDatabase.messages.incrementViewedStoryReceiptCounts(viewedReceipt.timestamp, senderRecipientId, envelope.clientTimestamp!!)

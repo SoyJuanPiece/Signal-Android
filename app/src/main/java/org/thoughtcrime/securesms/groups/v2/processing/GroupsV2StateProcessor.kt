@@ -44,6 +44,7 @@ import org.thoughtcrime.securesms.mms.OutgoingMessage
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.RecipientId
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.whispersystems.signalservice.api.NetworkResult
 import org.whispersystems.signalservice.api.groupsv2.DecryptedGroupUtil
@@ -923,7 +924,7 @@ class GroupsV2StateProcessor private constructor(
     }
 
     fun stopAllTypingForGroup() {
-      if (TextSecurePreferences.isTypingIndicatorsEnabled(AppDependencies.application)) {
+      if (SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled()) {
         val threadId = SignalDatabase.threads.getThreadIdFor(SignalDatabase.recipients.getOrInsertFromGroupId(groupId))
         if (threadId != null) {
           AppDependencies.typingStatusRepository.stopAllTypingForThread(threadId)

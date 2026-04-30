@@ -18,6 +18,8 @@ import org.thoughtcrime.securesms.net.NotPushRegisteredException;
 import org.thoughtcrime.securesms.recipients.Recipient;
 import org.thoughtcrime.securesms.recipients.RecipientUtil;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
+import org.thoughtcrime.securesms.util.SupabaseUserSettings;
+import kotlinx.coroutines.BuildersKt;
 import org.whispersystems.signalservice.api.messages.SignalServiceTypingMessage;
 import org.whispersystems.signalservice.api.messages.SignalServiceTypingMessage.Action;
 
@@ -81,7 +83,7 @@ public class TypingSendJob extends BaseJob {
       throw new NotPushRegisteredException();
     }
 
-    if (!TextSecurePreferences.isTypingIndicatorsEnabled(context)) {
+    if (!SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled()) {
       return;
     }
 
