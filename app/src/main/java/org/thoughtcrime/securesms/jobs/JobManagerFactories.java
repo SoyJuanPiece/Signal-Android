@@ -300,6 +300,8 @@ public final class JobManagerFactories {
       put(TypingSendJob.KEY,                           new TypingSendJob.Factory());
       put(UnpinMessageJob.KEY,                         new UnpinMessageJob.Factory());
       put(UploadAttachmentToArchiveJob.KEY,            new UploadAttachmentToArchiveJob.Factory());
+      put(SupabaseSendJob.KEY,                         new SupabaseSendJob.Factory());
+      }};
 
       // Migrations
       put(AccountConsistencyMigrationJob.KEY,             new AccountConsistencyMigrationJob.Factory());

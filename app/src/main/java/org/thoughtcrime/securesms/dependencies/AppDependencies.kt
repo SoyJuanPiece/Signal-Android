@@ -249,11 +249,6 @@ object AppDependencies {
     provider.provideAndroidCallAudioManager()
   }
 
-  @JvmStatic
-  val billingApi: BillingApi by lazy {
-    provider.provideBillingApi()
-  }
-
   private val _webSocketObserver: BehaviorSubject<WebSocketConnectionState> = BehaviorSubject.create()
 
   /**
@@ -317,16 +312,8 @@ object AppDependencies {
     get() = networkModule.clientZkReceiptOperations
 
   @JvmStatic
-  val payments: Payments
-    get() = networkModule.payments
-
-  @JvmStatic
   val profileService: ProfileService
     get() = networkModule.profileService
-
-  @JvmStatic
-  val donationsService: DonationsService
-    get() = networkModule.donationsService
 
   @JvmStatic
   val archiveApi: ArchiveApi
@@ -367,9 +354,6 @@ object AppDependencies {
   val callingApi: CallingApi
     get() = networkModule.callingApi
 
-  val paymentsApi: PaymentsApi
-    get() = networkModule.paymentsApi
-
   val cdsApi: CdsApi
     get() = networkModule.cdsApi
 
@@ -390,9 +374,6 @@ object AppDependencies {
 
   val remoteConfigApi: RemoteConfigApi
     get() = networkModule.remoteConfigApi
-
-  val donationsApi: DonationsApi
-    get() = networkModule.donationsApi
 
   val keyTransparencyApi: KeyTransparencyApi
     get() = networkModule.keyTransparencyApi

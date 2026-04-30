@@ -3,7 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/signup"
-    app:startDestination="@id/welcomeFragment">
+    app:startDestination="@id/supabaseLoginFragment">
+
+    <fragment
+        android:id="@+id/supabaseLoginFragment"
+        android:name="org.thoughtcrime.securesms.registration.ui.supabase.SupabaseLoginFragment"
+        android:label="Supabase Login"
+        tools:layout="@layout/fragment_supabase_login">
+        <action
+            android:id="@+id/go_to_welcome"
+            app:destination="@id/welcomeFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/welcomeFragment"

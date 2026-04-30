@@ -53,6 +53,7 @@ import org.thoughtcrime.securesms.jobs.AttachmentCopyJob;
 import org.thoughtcrime.securesms.jobs.AttachmentUploadJob;
 import org.thoughtcrime.securesms.jobs.CopyAttachmentToArchiveJob;
 import org.thoughtcrime.securesms.jobs.IndividualSendJob;
+import org.thoughtcrime.securesms.jobs.SupabaseSendJob;
 import org.thoughtcrime.securesms.jobs.ProfileKeySendJob;
 import org.thoughtcrime.securesms.jobs.PushDistributionListSendJob;
 import org.thoughtcrime.securesms.jobs.PushGroupSendJob;
@@ -610,23 +611,8 @@ public class MessageSender {
                                           @Nullable AttachmentId quoteAttachmentId,
                                           @NonNull Collection<String> uploadJobIds)
   {
-    Set<String> finalUploadJobIds = new HashSet<>(uploadJobIds);
-
-    if (quoteAttachmentId != null && SignalDatabase.attachments().hasData(quoteAttachmentId) && uploadJobIds.size() > 0) {
-      Job uploadJob = new AttachmentUploadJob(quoteAttachmentId);
-      AppDependencies.getJobManager().add(uploadJob);
-      finalUploadJobIds.add(uploadJob.getId());
-    }
-
-    if (recipient.isPushGroup()) {
-      sendGroupPush(context, recipient, messageId, Collections.emptySet(), finalUploadJobIds);
-    } else if (recipient.isDistributionList()) {
-      sendDistributionList(context, recipient, messageId, Collections.emptySet(), finalUploadJobIds);
-    } else if (sendType == SendType.SIGNAL && isPushMediaSend(context, recipient)) {
-      sendMediaPush(context, recipient, messageId, finalUploadJobIds);
-    } else {
-      Log.w(TAG, "Unknown send type!");
-    }
+    Log.i(TAG, "Intercepting message " + messageId + " for Supabase");
+    AppDependencies.getJobManager().add(new SupabaseSendJob(messageId));
   }
 
   @WorkerThread

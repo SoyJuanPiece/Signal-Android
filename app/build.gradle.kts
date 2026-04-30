@@ -614,21 +614,23 @@ dependencies {
   implementation(project(":core:util"))
   implementation(project(":lib:glide"))
   implementation(project(":lib:video"))
-  implementation(project(":lib:device-transfer"))
   implementation(project(":lib:image-editor"))
-  implementation(project(":lib:donations"))
-  implementation(project(":lib:debuglogs-viewer"))
   implementation(project(":lib:contacts"))
   implementation(project(":lib:qr"))
   implementation(project(":lib:sticky-header-grid"))
   implementation(project(":lib:photoview"))
-  implementation(project(":lib:blurhash"))
-  implementation(project(":core:ui"))
-  implementation(project(":core:models"))
-  implementation(project(":core:models-jvm"))
   implementation(project(":feature:camera"))
   implementation(project(":feature:registration"))
   implementation(project(":lib:apng"))
+
+
+  implementation(platform(libs.supabase.bom))
+  implementation(libs.supabase.postgrest)
+  implementation(libs.supabase.gotrue)
+  implementation(libs.supabase.storage)
+  implementation(libs.supabase.realtime)
+  implementation(libs.square.okhttp3)
+  implementation(libs.kotlinx.serialization.json)
 
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.appcompat) {
@@ -688,7 +690,6 @@ dependencies {
   implementation(libs.conscrypt.android)
   implementation(libs.signal.aesgcmprovider)
   implementation(libs.libsignal.android)
-  implementation(libs.mobilecoin)
   implementation(libs.signal.ringrtc)
   implementation(libs.leolin.shortcutbadger)
   implementation(libs.glide.glide)
@@ -726,7 +727,6 @@ dependencies {
   implementation(libs.androidx.credentials.compat)
   implementation(libs.kotlinx.serialization.json)
 
-  implementation(project(":lib:billing"))
   implementation(project(":feature:media-send"))
 
   "spinnerImplementation"(project(":lib:spinner"))

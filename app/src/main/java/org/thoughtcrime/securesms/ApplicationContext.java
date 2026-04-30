@@ -161,6 +161,8 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
     super.onCreate();
 
+    SupabaseHelper.INSTANCE.init();
+
     AppStartup.getInstance().addBlocking("sqlcipher-init", () -> {
                 SqlCipherLibraryLoader.load();
                 SignalDatabase.init(this,
@@ -246,6 +248,17 @@ public class ApplicationContext extends Application implements AppForegroundObse
     Log.d(TAG, "onCreate() took " + (System.currentTimeMillis() - startTime) + " ms");
     SignalLocalMetrics.ColdStart.onApplicationCreateFinished();
     Tracer.getInstance().end("Application#onCreate()");
+
+    SignalExecutors.BOUNDED.execute(() -> {
+        try {
+            kotlinx.coroutines.BuildersKt.runBlocking(
+                kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                (scope, continuation) -> SupabaseMessageManager.INSTANCE.fetchNewMessages(continuation)
+            );
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to fetch Supabase messages", e);
+        }
+    });
   }
 
   @Override
@@ -265,6 +278,15 @@ public class ApplicationContext extends Application implements AppForegroundObse
       InAppPaymentAuthCheckJob.enqueueIfNeeded();
       RemoteConfig.refreshIfNecessary();
       RetrieveProfileJob.enqueueRoutineFetchIfNecessary();
+
+      try {
+          kotlinx.coroutines.BuildersKt.runBlocking(
+              kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+              (scope, continuation) -> SupabaseMessageManager.INSTANCE.fetchNewMessages(continuation)
+          );
+      } catch (Exception e) {
+          Log.e(TAG, "Failed to fetch Supabase messages on foreground", e);
+      }
       executePendingContactSync();
       KeyCachingService.onAppForegrounded(this);
       AppDependencies.getShakeToReport().enable();
