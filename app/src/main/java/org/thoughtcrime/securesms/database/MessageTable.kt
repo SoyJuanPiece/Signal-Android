@@ -148,6 +148,7 @@ import org.thoughtcrime.securesms.util.MessageConstraintsUtil
 import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.SignalTrace
 import org.thoughtcrime.securesms.util.TextSecurePreferences
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.util.isStory
 import org.whispersystems.signalservice.internal.push.SyncMessage
 import java.io.Closeable
@@ -6781,7 +6782,7 @@ open class MessageTable(context: Context?, databaseHelper: SignalDatabase) : Dat
       val messageExtraBytes = cursor.requireBlob(MESSAGE_EXTRAS)
       val messageExtras = messageExtraBytes?.let { MessageExtras.ADAPTER.decode(it) }
 
-      if (!TextSecurePreferences.isReadReceiptsEnabled(context)) {
+      if (!SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled()) {
         hasReadReceipt = false
         if (MessageTypes.isOutgoingMessageType(box) && !storyType.isStory) {
           isViewed = false

@@ -12,6 +12,7 @@ import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.net.SignalNetwork
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.whispersystems.signalservice.api.NetworkResultUtil
 import org.whispersystems.signalservice.api.push.exceptions.AuthorizationFailedException
@@ -55,8 +56,8 @@ class AdvancedPrivacySettingsRepository(private val context: Context) {
       StorageSyncHelper.scheduleSyncForDataChange()
       AppDependencies.jobManager.add(
         MultiDeviceConfigurationUpdateJob(
-          TextSecurePreferences.isReadReceiptsEnabled(context),
-          TextSecurePreferences.isTypingIndicatorsEnabled(context),
+          SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled(),
+          SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled(),
           TextSecurePreferences.isShowUnidentifiedDeliveryIndicatorsEnabled(context),
           SignalStore.settings.isLinkPreviewsEnabled
         )

@@ -8,6 +8,7 @@ import org.thoughtcrime.securesms.jobs.MultiDeviceConfigurationUpdateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 
 class PrivacySettingsRepository {
@@ -28,8 +29,8 @@ class PrivacySettingsRepository {
       StorageSyncHelper.scheduleSyncForDataChange()
       AppDependencies.jobManager.add(
         MultiDeviceConfigurationUpdateJob(
-          TextSecurePreferences.isReadReceiptsEnabled(context),
-          TextSecurePreferences.isTypingIndicatorsEnabled(context),
+          SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled(),
+          SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled(),
           TextSecurePreferences.isShowUnidentifiedDeliveryIndicatorsEnabled(context),
           SignalStore.settings.isLinkPreviewsEnabled
         )
@@ -38,13 +39,13 @@ class PrivacySettingsRepository {
   }
 
   fun syncTypingIndicatorsState() {
-    val enabled = TextSecurePreferences.isTypingIndicatorsEnabled(context)
+    val enabled = SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled()
 
     SignalDatabase.recipients.markNeedsSync(Recipient.self().id)
     StorageSyncHelper.scheduleSyncForDataChange()
     AppDependencies.jobManager.add(
       MultiDeviceConfigurationUpdateJob(
-        TextSecurePreferences.isReadReceiptsEnabled(context),
+        SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled(),
         enabled,
         TextSecurePreferences.isShowUnidentifiedDeliveryIndicatorsEnabled(context),
         SignalStore.settings.isLinkPreviewsEnabled

@@ -9,6 +9,7 @@ import org.thoughtcrime.securesms.jobs.MultiDeviceContactUpdateJob
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.storage.StorageSyncHelper
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 
 class ChatsSettingsRepository {
@@ -23,8 +24,8 @@ class ChatsSettingsRepository {
       StorageSyncHelper.scheduleSyncForDataChange()
       AppDependencies.jobManager.add(
         MultiDeviceConfigurationUpdateJob(
-          TextSecurePreferences.isReadReceiptsEnabled(context),
-          TextSecurePreferences.isTypingIndicatorsEnabled(context),
+          SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled(),
+          SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled(),
           TextSecurePreferences.isShowUnidentifiedDeliveryIndicatorsEnabled(context),
           isLinkPreviewsEnabled
         )

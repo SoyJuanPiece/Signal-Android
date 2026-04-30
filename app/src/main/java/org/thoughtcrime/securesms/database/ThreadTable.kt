@@ -71,6 +71,7 @@ import org.thoughtcrime.securesms.util.ConversationUtil
 import org.thoughtcrime.securesms.util.JsonUtils
 import org.thoughtcrime.securesms.util.JsonUtils.SaneJSONObject
 import org.thoughtcrime.securesms.util.SignalTrace
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.isPoll
 import org.thoughtcrime.securesms.util.isScheduled
@@ -2276,7 +2277,7 @@ class ThreadTable(context: Context, databaseHelper: SignalDatabase) : DatabaseTa
         RecipientCreator.forIndividual(context, recipientSettings)
       }
 
-      val hasReadReceipt = TextSecurePreferences.isReadReceiptsEnabled(context) && cursor.requireBoolean(HAS_READ_RECEIPT)
+      val hasReadReceipt = SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled() && cursor.requireBoolean(HAS_READ_RECEIPT)
       val extraString = cursor.getString(cursor.getColumnIndexOrThrow(SNIPPET_EXTRAS))
       val messageExtraBytes = cursor.getBlob(cursor.getColumnIndexOrThrow(SNIPPET_MESSAGE_EXTRAS))
       val messageExtras = if (messageExtraBytes != null) MessageExtras.ADAPTER.decode(messageExtraBytes) else null
