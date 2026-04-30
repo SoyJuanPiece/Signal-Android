@@ -37,17 +37,32 @@ jobs:
     - name: Build debug APK
       run: ./gradlew assembleDebug
 
-    - name: Upload debug APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug-apk
-        path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Decode Keystore
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      env:
+        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      run: echo $KEYSTORE_BASE64 | base64 -d > release.jks
+
+    - name: Build Release APK
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      env:
+        RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+        RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+        RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+      run: ./gradlew assemblePlayProdRelease
 
     - name: Upload debug APK
       uses: actions/upload-artifact@v4
       with:
         name: app-debug-apk
         path: app/build/outputs/apk/debug/app-debug.apk
+
+    - name: Upload release APK
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release-apk
+        path: app/build/outputs/apk/playProd/release/*.apk
 
     - name: Archive reports for failed build
       if: ${{ failure() }}

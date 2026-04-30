@@ -120,6 +120,17 @@ android {
     suppressWarnings = true
   }
 
+  signingConfigs {
+    create("release") {
+      if (System.getenv("CI") == "true") {
+        storeFile = file("${project.rootDir}/release.jks")
+        storePassword = System.getenv("RELEASE_STORE_PASSWORD")
+        keyAlias = System.getenv("RELEASE_KEY_ALIAS")
+        keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+      }
+    }
+  }
+
   debugKeystorePropertiesProvider.orNull?.let { properties ->
     signingConfigs.getByName("debug").apply {
       storeFile = file("${project.rootDir}/${properties.getProperty("storeFile")}")
@@ -323,6 +334,7 @@ android {
 
     getByName("release") {
       isMinifyEnabled = true
+      signingConfig = signingConfigs.getByName("release")
       proguardFiles(*buildTypes["debug"].proguardFiles.toTypedArray())
       buildConfigField("String", "BUILD_VARIANT_TYPE", "\"Release\"")
     }
