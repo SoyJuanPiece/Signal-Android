@@ -113,7 +113,8 @@ import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.Environment;
 import org.thoughtcrime.securesms.util.RemoteConfig;
 import org.thoughtcrime.securesms.util.SignalLocalMetrics;
-import org.thoughtcrime.securesms.util.SignalUncaughtExceptionHandler;
+import org.thoughtcrime.securesms.util.SupabaseHelper;
+import org.thoughtcrime.securesms.util.SupabaseUserSettings;
 import org.thoughtcrime.securesms.util.SqlCipherLogTarget;
 import org.thoughtcrime.securesms.util.TextSecurePreferences;
 import org.signal.core.util.Util;
@@ -162,6 +163,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
     super.onCreate();
 
     SupabaseHelper.INSTANCE.init();
+    SupabaseUserSettings.INSTANCE.init(this, SupabaseHelper.INSTANCE.getClient());
 
     AppStartup.getInstance().addBlocking("sqlcipher-init", () -> {
                 SqlCipherLibraryLoader.load();
@@ -451,12 +453,12 @@ public class ApplicationContext extends Application implements AppForegroundObse
 
       Log.i(TAG, "Setting first install version to " + BuildConfig.CANONICAL_VERSION_CODE);
       TextSecurePreferences.setFirstInstallVersion(this, BuildConfig.CANONICAL_VERSION_CODE);
-    } else if (!SignalStore.settings().getPassphraseDisabled() && VersionTracker.getDaysSinceFirstInstalled(this) < 90) {
+    } else if (false && VersionTracker.getDaysSinceFirstInstalled(this) < 90) {
       Log.i(TAG, "Detected a new install that doesn't have passphrases disabled -- assuming bad initialization.");
       AppInitialization.onRepairFirstEverAppLaunch(this);
-    } else if (!SignalStore.settings().getPassphraseDisabled() && VersionTracker.getDaysSinceFirstInstalled(this) < 912) {
+    } else if (false && VersionTracker.getDaysSinceFirstInstalled(this) < 912) {
       Log.i(TAG, "Detected a not-recent install that doesn't have passphrases disabled -- disabling now.");
-      SignalStore.settings().setPassphraseDisabled(true);
+      // SignalStore.settings().setPassphraseDisabled(true); // Removed as passphrase is not supported with Supabase
     }
   }
 
@@ -489,7 +491,7 @@ public class ApplicationContext extends Application implements AppForegroundObse
   }
 
   private void initializeTrimThreadsByDateManager() {
-    KeepMessagesDuration keepMessagesDuration = SignalStore.settings().getKeepMessagesDuration();
+    KeepMessagesDuration keepMessagesDuration = SupabaseUserSettings.INSTANCE.getKeepMessagesDuration();
     if (keepMessagesDuration != KeepMessagesDuration.FOREVER) {
       AppDependencies.getTrimThreadsByDateManager().scheduleIfNecessary();
     }
