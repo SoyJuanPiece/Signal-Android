@@ -535,6 +535,8 @@ dependencies {
   implementation(project(":lib:libsignal-service"))
   implementation(project(":lib:network"))
   implementation(project(":lib:paging"))
+  implementation(project(":core:models"))
+  implementation(project(":core:models-jvm"))
   implementation(project(":core:util"))
   implementation(project(":lib:glide"))
   implementation(project(":lib:video"))
