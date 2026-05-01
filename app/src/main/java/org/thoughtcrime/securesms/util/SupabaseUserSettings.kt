@@ -5,7 +5,8 @@ import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.github.jan.tennert.supabase.SupabaseClient
-import io.github.jan.tennert.supabase.gotrue.Auth
+import io.github.jan.tennert.supabase.auth.Auth
+import io.github.jan.tennert.supabase.auth.auth
 import io.github.jan.tennert.supabase.postgrest.Postgrest
 import io.github.jan.tennert.supabase.postgrest.from
 import io.github.jan.tennert.supabase.postgrest.query.Columns
@@ -48,7 +49,7 @@ object SupabaseUserSettings {
     }
 
     private fun loadCachedSettings() {
-        val userId = supabaseClient.gotrue.currentSessionOrNull()?.user?.id ?: return
+        val userId = supabaseClient.auth.currentSessionOrNull()?.user?.id ?: return
         val cachedReadReceipts = preferences.getBoolean("read_receipts_$userId", true)
         val cachedTypingIndicators = preferences.getBoolean("typing_indicators_$userId", true)
         val cachedBlockedUsers = preferences.getStringSet("blocked_users_$userId", emptySet())?.toList() ?: emptyList()
@@ -86,7 +87,7 @@ object SupabaseUserSettings {
     }
 
     private fun startListeningForChanges() {
-        val userId = supabaseClient.gotrue.currentSessionOrNull()?.user?.id ?: return
+        val userId = supabaseClient.auth.currentSessionOrNull()?.user?.id ?: return
         supabaseClient.realtime.createChannel("public:user_settings")
             .onPostgresChanges(schema = "public", table = "user_settings") { payload ->
                 if (payload.eventType == "UPDATE" && payload.newRecord?.get("user_id") == userId) {
@@ -100,21 +101,21 @@ object SupabaseUserSettings {
     }
 
     suspend fun updateReadReceipts(enabled: Boolean) {
-        val userId = supabaseClient.gotrue.currentSessionOrNull()?.user?.id ?: return
+        val userId = supabaseClient.auth.currentSessionOrNull()?.user?.id ?: return
         supabaseClient.from("user_settings").update(mapOf("read_receipts" to enabled)) {
             filter { eq("user_id", userId) }
         }
     }
 
     suspend fun updateTypingIndicators(enabled: Boolean) {
-        val userId = supabaseClient.gotrue.currentSessionOrNull()?.user?.id ?: return
+        val userId = supabaseClient.auth.currentSessionOrNull()?.user?.id ?: return
         supabaseClient.from("user_settings").update(mapOf("typing_indicators" to enabled)) {
             filter { eq("user_id", userId) }
         }
     }
 
     suspend fun blockUser(blockedUserId: String) {
-        val userId = supabaseClient.gotrue.currentSessionOrNull()?.user?.id ?: return
+        val userId = supabaseClient.auth.currentSessionOrNull()?.user?.id ?: return
         val currentSettings = _liveUserSettings.value ?: fetchSettings(userId)
         val updatedBlockedUsers = currentSettings.blocked_users + blockedUserId
         supabaseClient.from("user_settings").update(mapOf("blocked_users" to updatedBlockedUsers)) {
@@ -123,7 +124,7 @@ object SupabaseUserSettings {
     }
 
     suspend fun unblockUser(unblockedUserId: String) {
-        val userId = supabaseClient.gotrue.currentSessionOrNull()?.user?.id ?: return
+        val userId = supabaseClient.auth.currentSessionOrNull()?.user?.id ?: return
         val currentSettings = _liveUserSettings.value ?: fetchSettings(userId)
         val updatedBlockedUsers = currentSettings.blocked_users.filter { it != unblockedUserId }
         supabaseClient.from("user_settings").update(mapOf("blocked_users" to updatedBlockedUsers)) {

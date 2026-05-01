@@ -550,7 +550,7 @@ dependencies {
 
   implementation(platform(libs.supabase.bom))
   implementation(libs.supabase.postgrest)
-  implementation(libs.supabase.gotrue)
+  implementation(libs.supabase.auth)
   implementation(libs.supabase.storage)
   implementation(libs.supabase.realtime)
   implementation(libs.square.okhttp3)

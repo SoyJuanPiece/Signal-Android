@@ -29,7 +29,7 @@ data class SupabaseMessage(
 object SupabaseMessageManager {
 
     suspend fun sendMessage(recipient: Recipient, text: String, attachment: Attachment? = null) {
-        val user = SupabaseHelper.client.gotrue.currentSessionOrNull()?.user ?: return
+        val user = SupabaseHelper.client.auth.currentSessionOrNull()?.user ?: return
         var attachmentUrl: String? = null
 
         if (attachment != null) {
@@ -58,7 +58,7 @@ object SupabaseMessageManager {
     }
 
     fun startListeningForMessages() {
-        val user = SupabaseHelper.client.gotrue.currentSessionOrNull()?.user ?: return
+        val user = SupabaseHelper.client.auth.currentSessionOrNull()?.user ?: return
         
         val channel = SupabaseHelper.client.realtime.createChannel("public:messages")
         
@@ -73,7 +73,7 @@ object SupabaseMessageManager {
     }
 
     suspend fun fetchNewMessages() {
-        val user = SupabaseHelper.client.gotrue.currentSessionOrNull()?.user ?: return
+        val user = SupabaseHelper.client.auth.currentSessionOrNull()?.user ?: return
         
         val messages = SupabaseHelper.client.postgrest["messages"]
             .select {

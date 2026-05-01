@@ -5,8 +5,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import io.github.jan.tennert.supabase.gotrue.auth
-import io.github.jan.tennert.supabase.gotrue.providers.builtin.Email
+import io.github.jan.tennert.supabase.auth.auth
+import io.github.jan.tennert.supabase.auth.providers.builtin.Email
 import kotlinx.coroutines.launch
 import org.thoughtcrime.securesms.R
 import org.thoughtcrime.securesms.databinding.FragmentSupabaseLoginBinding
