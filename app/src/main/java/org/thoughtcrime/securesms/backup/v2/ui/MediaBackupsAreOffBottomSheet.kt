@@ -40,7 +40,6 @@ import org.signal.core.util.gibiBytes
 import org.signal.core.util.money.FiatMoney
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsType
 import org.thoughtcrime.securesms.billing.upgrade.UpgradeToPaidTierBottomSheet
-import org.thoughtcrime.securesms.payments.FiatMoneyUtil
 import java.math.BigDecimal
 import java.util.Currency
 import kotlin.time.Duration.Companion.days

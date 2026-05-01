@@ -17,8 +17,6 @@ import org.signal.donations.InAppPaymentType
 import org.signal.donations.StripeDeclineCode
 import org.signal.donations.StripeFailureCode
 import org.thoughtcrime.securesms.badges.Badges
-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository.toActiveSubscriptionChargeFailure
-import org.thoughtcrime.securesms.components.settings.app.subscription.errors.mapToErrorStringResource
 import org.thoughtcrime.securesms.database.InAppPaymentTable
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.keyvalue.SignalStore

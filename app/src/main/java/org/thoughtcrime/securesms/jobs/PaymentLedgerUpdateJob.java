@@ -12,7 +12,6 @@ import org.thoughtcrime.securesms.dependencies.AppDependencies;
 import org.thoughtcrime.securesms.jobmanager.JsonJobData;
 import org.thoughtcrime.securesms.jobmanager.Job;
 import org.thoughtcrime.securesms.keyvalue.SignalStore;
-import org.thoughtcrime.securesms.payments.MobileCoinLedgerWrapper;
 import org.thoughtcrime.securesms.transport.RetryLaterException;
 
 import java.io.IOException;

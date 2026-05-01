@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import org.signal.donations.StripeDeclineCode
 import org.signal.donations.StripeFailureCode
-import org.thoughtcrime.securesms.components.settings.app.subscription.errors.PayPalDeclineCode
 import org.thoughtcrime.securesms.database.model.databaseprotos.DonationErrorValue
 import org.thoughtcrime.securesms.database.model.databaseprotos.PendingOneTimeDonation
 

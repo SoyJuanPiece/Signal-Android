@@ -33,7 +33,6 @@ import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsType
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsTypeBlock
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.MessageBackupsTypeIconColors
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.testBackupTypes
-import org.thoughtcrime.securesms.payments.FiatMoneyUtil
 import org.signal.core.ui.R as CoreUiR
 
 /**

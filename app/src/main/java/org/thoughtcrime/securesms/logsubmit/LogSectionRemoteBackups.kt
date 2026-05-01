@@ -11,14 +11,11 @@ import kotlinx.coroutines.runBlocking
 import org.signal.donations.InAppPaymentType
 import org.thoughtcrime.securesms.backup.v2.ArchiveRestoreProgress
 import org.thoughtcrime.securesms.backup.v2.ui.subscription.GooglePlayServicesAvailability
-import org.thoughtcrime.securesms.components.settings.app.subscription.DonationSerializationHelper.toFiatMoney
-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.keyvalue.SignalStore
 import org.thoughtcrime.securesms.keyvalue.protos.ArchiveUploadProgressState
-import org.thoughtcrime.securesms.payments.FiatMoneyUtil
 import org.whispersystems.signalservice.api.storage.IAPSubscriptionId
 
 class LogSectionRemoteBackups : LogSection {

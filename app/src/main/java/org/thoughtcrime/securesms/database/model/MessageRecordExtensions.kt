@@ -7,7 +7,6 @@ package org.thoughtcrime.securesms.database.model
 
 import org.thoughtcrime.securesms.attachments.DatabaseAttachment
 import org.thoughtcrime.securesms.database.CallTable
-import org.thoughtcrime.securesms.payments.Payment
 import org.thoughtcrime.securesms.polls.PollRecord
 
 fun MessageRecord.withReactions(reactions: List<ReactionRecord>): MessageRecord {

@@ -16,9 +16,6 @@ import org.thoughtcrime.securesms.components.quotes.QuoteViewColorTheme
 import org.thoughtcrime.securesms.conversation.colors.Colorizer
 import org.thoughtcrime.securesms.database.model.databaseprotos.PaymentTombstone
 import org.thoughtcrime.securesms.databinding.PaymentMessageViewBinding
-import org.thoughtcrime.securesms.payments.CryptoValueUtil
-import org.thoughtcrime.securesms.payments.Direction
-import org.thoughtcrime.securesms.payments.Payment
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.util.visible
 import org.whispersystems.signalservice.api.payments.Money

@@ -9,7 +9,6 @@ import kotlinx.coroutines.runBlocking
 import okio.IOException
 import org.signal.core.util.billing.BillingPurchaseResult
 import org.signal.core.util.logging.Log
-import org.thoughtcrime.securesms.components.settings.app.subscription.InAppPaymentsRepository
 import org.thoughtcrime.securesms.database.SignalDatabase
 import org.thoughtcrime.securesms.database.model.InAppPaymentSubscriberRecord
 import org.thoughtcrime.securesms.dependencies.AppDependencies
