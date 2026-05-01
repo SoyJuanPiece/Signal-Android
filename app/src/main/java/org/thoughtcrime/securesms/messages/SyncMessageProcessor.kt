@@ -113,6 +113,7 @@ import org.thoughtcrime.securesms.util.IdentityUtil
 import org.thoughtcrime.securesms.util.MediaUtil
 import org.thoughtcrime.securesms.util.MessageConstraintsUtil
 import org.thoughtcrime.securesms.util.SignalE164Util
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.thoughtcrime.securesms.util.hasGiftBadge
 import org.whispersystems.signalservice.api.crypto.EnvelopeMetadata
@@ -996,8 +997,8 @@ object SyncMessageProcessor {
       Request.Type.CONFIGURATION -> {
         AppDependencies.jobManager.add(
           MultiDeviceConfigurationUpdateJob(
-            TextSecurePreferences.isReadReceiptsEnabled(context),
-            TextSecurePreferences.isTypingIndicatorsEnabled(context),
+            SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled(),
+            SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled(),
             TextSecurePreferences.isShowUnidentifiedDeliveryIndicatorsEnabled(context),
             SignalStore.settings.isLinkPreviewsEnabled
           )
@@ -1139,15 +1140,17 @@ object SyncMessageProcessor {
     log(envelopeTimestamp, "Synchronize configuration message.")
 
     if (configurationMessage.readReceipts != null) {
-      TextSecurePreferences.setReadReceiptsEnabled(context, configurationMessage.readReceipts!!)
+      BuildersKt.runBlocking(kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                               { scope, continuation -> SupabaseUserSettings.INSTANCE.updateReadReceipts(configurationMessage.readReceipts!!, continuation) })
     }
 
     if (configurationMessage.unidentifiedDeliveryIndicators != null) {
-      TextSecurePreferences.setShowUnidentifiedDeliveryIndicatorsEnabled(context, configurationMessage.unidentifiedDeliveryIndicators!!)
+      // TextSecurePreferences.setShowUnidentifiedDeliveryIndicatorsEnabled(context, configurationMessage.unidentifiedDeliveryIndicators!!)
     }
 
     if (configurationMessage.typingIndicators != null) {
-      TextSecurePreferences.setTypingIndicatorsEnabled(context, configurationMessage.typingIndicators!!)
+      BuildersKt.runBlocking(kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                               { scope, continuation -> SupabaseUserSettings.INSTANCE.updateTypingIndicators(configurationMessage.typingIndicators!!, continuation) })
     }
 
     if (configurationMessage.linkPreviews != null) {

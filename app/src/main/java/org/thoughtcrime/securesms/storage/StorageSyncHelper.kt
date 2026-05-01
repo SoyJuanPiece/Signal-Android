@@ -28,6 +28,7 @@ import org.thoughtcrime.securesms.notifications.profiles.NotificationProfileId
 import org.thoughtcrime.securesms.payments.Entropy
 import org.thoughtcrime.securesms.recipients.Recipient
 import org.thoughtcrime.securesms.recipients.Recipient.Companion.self
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
 import org.thoughtcrime.securesms.util.TextSecurePreferences
 import org.whispersystems.signalservice.api.push.UsernameLinkComponents
 import org.whispersystems.signalservice.api.storage.SignalAccountRecord
@@ -146,9 +147,9 @@ object StorageSyncHelper {
       avatarUrlPath = self.profileAvatar ?: ""
       noteToSelfArchived = selfRecord != null && selfRecord.syncExtras.isArchived
       noteToSelfMarkedUnread = selfRecord != null && selfRecord.syncExtras.isForcedUnread
-      typingIndicators = TextSecurePreferences.isTypingIndicatorsEnabled(context)
-      readReceipts = TextSecurePreferences.isReadReceiptsEnabled(context)
-      sealedSenderIndicators = TextSecurePreferences.isShowUnidentifiedDeliveryIndicatorsEnabled(context)
+      typingIndicators = SupabaseUserSettings.INSTANCE.isTypingIndicatorsEnabled()
+      readReceipts = SupabaseUserSettings.INSTANCE.isReadReceiptsEnabled()
+      sealedSenderIndicators = false
       linkPreviews = SignalStore.settings.isLinkPreviewsEnabled
       unlistedPhoneNumber = SignalStore.phoneNumberPrivacy.phoneNumberDiscoverabilityMode == PhoneNumberDiscoverabilityMode.NOT_DISCOVERABLE
       phoneNumberSharingMode = StorageSyncModels.localToRemotePhoneNumberSharingMode(SignalStore.phoneNumberPrivacy.phoneNumberSharingMode)
@@ -242,9 +243,12 @@ object StorageSyncHelper {
   fun applyAccountStorageSyncUpdates(context: Context, self: Recipient, update: StorageRecordUpdate<SignalAccountRecord>, fetchProfile: Boolean) {
     SignalDatabase.recipients.applyStorageSyncAccountUpdate(update)
 
-    TextSecurePreferences.setReadReceiptsEnabled(context, update.new.proto.readReceipts)
-    TextSecurePreferences.setTypingIndicatorsEnabled(context, update.new.proto.typingIndicators)
-    TextSecurePreferences.setShowUnidentifiedDeliveryIndicatorsEnabled(context, update.new.proto.sealedSenderIndicators)
+    BuildersKt.runBlocking(kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                             { scope, continuation -> SupabaseUserSettings.INSTANCE.updateReadReceipts(update.new.proto.readReceipts, continuation) })
+    BuildersKt.runBlocking(kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                             { scope, continuation -> SupabaseUserSettings.INSTANCE.updateTypingIndicators(update.new.proto.typingIndicators, continuation) })
+    
+    // TextSecurePreferences.setShowUnidentifiedDeliveryIndicatorsEnabled(context, update.new.proto.sealedSenderIndicators)
     SignalStore.settings.isLinkPreviewsEnabled = update.new.proto.linkPreviews
     SignalStore.phoneNumberPrivacy.phoneNumberDiscoverabilityMode = if (update.new.proto.unlistedPhoneNumber) PhoneNumberDiscoverabilityMode.NOT_DISCOVERABLE else PhoneNumberDiscoverabilityMode.DISCOVERABLE
     SignalStore.phoneNumberPrivacy.phoneNumberSharingMode = StorageSyncModels.remoteToLocalPhoneNumberSharingMode(update.new.proto.phoneNumberSharingMode)

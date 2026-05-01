@@ -85,6 +85,8 @@ import org.thoughtcrime.securesms.registration.util.RegistrationUtil
 import org.thoughtcrime.securesms.registration.viewmodel.SvrAuthCredentialSet
 import org.thoughtcrime.securesms.util.RemoteConfig
 import org.thoughtcrime.securesms.util.TextSecurePreferences
+import org.thoughtcrime.securesms.util.SupabaseUserSettings
+import kotlinx.coroutines.BuildersKt
 import org.thoughtcrime.securesms.util.dualsim.MccMncProducer
 import org.whispersystems.signalservice.api.NetworkResult
 import org.whispersystems.signalservice.api.SvrNoDataException
@@ -1165,7 +1167,8 @@ class RegistrationViewModel : ViewModel() {
         )
 
         if (message.readReceipts != null) {
-          TextSecurePreferences.setReadReceiptsEnabled(context, message.readReceipts!!)
+          BuildersKt.runBlocking(kotlinx.coroutines.EmptyCoroutineContext.INSTANCE,
+                                   { scope, continuation -> SupabaseUserSettings.INSTANCE.updateReadReceipts(message.readReceipts!!, continuation) })
         }
 
         RegistrationRepository.registerAccountLocally(context, data)
