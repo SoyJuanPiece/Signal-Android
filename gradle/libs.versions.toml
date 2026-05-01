@@ -176,10 +176,10 @@ signal-ringrtc = "org.signal:ringrtc-android:2.68.0"
 
 # Third Party
 supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabase" }
-supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
-supabase-gotrue = { module = "io.github.jan-tennert.supabase:gotrue-kt" }
-supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt" }
-supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt" }
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabase" }
+supabase-gotrue = { module = "io.github.jan-tennert.supabase:gotrue-kt", version.ref = "supabase" }
+supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt", version.ref = "supabase" }
+supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt", version.ref = "supabase" }
 signal-android-database-sqlcipher = "net.zetetic:sqlcipher-android:4.13.0"
 greenrobot-eventbus = "org.greenrobot:eventbus:3.0.0"
 jackson-core = "com.fasterxml.jackson.core:jackson-databind:2.12.0"
