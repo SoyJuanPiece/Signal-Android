@@ -267,9 +267,6 @@ class MainActivity :
   private val megaphoneActionController = MainMegaphoneActionController()
   private val mainNavigationCallback = MainNavigationCallback()
 
-  override val googlePayRepository: GooglePayRepository by lazy { GooglePayRepository(this) }
-  override val googlePayResultPublisher: Subject<GooglePayComponent.GooglePayResult> = PublishSubject.create()
-
   private lateinit var mediaSendLauncher: ActivityResultLauncher<MediaSendActivityContract.Args>
 
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -304,10 +301,6 @@ class MainActivity :
         mainNavigationViewModel.getNextMegaphone()
       }
     })
-
-    UnreadPaymentsLiveData().observe(this) { unread ->
-      toolbarViewModel.setHasUnreadPayments(unread.isPresent)
-    }
 
     lifecycleScope.launch {
       launch {

@@ -85,8 +85,6 @@ class AppSettingsFragment : ComposeFragment(), Callbacks {
   private val appSettingsRouter by viewModels<AppSettingsRouter>()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    viewLifecycleOwner.lifecycle.addObserver(InAppPaymentsBottomSheetDelegate(childFragmentManager, viewLifecycleOwner))
-
     viewLifecycleOwner.lifecycleScope.launch {
       repeatOnLifecycle(Lifecycle.State.RESUMED) {
         appSettingsRouter.currentRoute.collect { route ->
@@ -94,7 +92,6 @@ class AppSettingsFragment : ComposeFragment(), Callbacks {
             is AppSettingsRoute.BackupsRoute.Remote -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_remoteBackupsSettingsFragment)
             is AppSettingsRoute.AccountRoute.Account -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_accountSettingsFragment)
             is AppSettingsRoute.LinkDeviceRoute.LinkDevice -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_linkDeviceFragment)
-            is AppSettingsRoute.DonationsRoute.Donations -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_manageDonationsFragment)
             is AppSettingsRoute.AppearanceRoute.Appearance -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_appearanceSettingsFragment)
             is AppSettingsRoute.ChatsRoute.Chats -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_chatsSettingsFragment)
             is AppSettingsRoute.StoriesRoute.Privacy -> findNavController().safeNavigate(AppSettingsFragmentDirections.actionAppSettingsFragmentToStoryPrivacySettings(route.titleId))
@@ -103,14 +100,13 @@ class AppSettingsFragment : ComposeFragment(), Callbacks {
             is AppSettingsRoute.BackupsRoute.Backups -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_backupsSettingsFragment)
             is AppSettingsRoute.DataAndStorageRoute.DataAndStorage -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_dataAndStorageSettingsFragment)
             is AppSettingsRoute.AppUpdates -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_appUpdatesSettingsFragment)
-            is AppSettingsRoute.Payments -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_paymentsActivity)
             is AppSettingsRoute.HelpRoute.Settings -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_helpSettingsFragment)
             is AppSettingsRoute.Invite -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_inviteFragment)
             is AppSettingsRoute.LabsRoute.Labs -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_labsSettingsFragment)
             is AppSettingsRoute.InternalRoute.Internal -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_internalSettingsFragment)
             is AppSettingsRoute.AccountRoute.ManageProfile -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_manageProfileActivity)
             is AppSettingsRoute.UsernameLinkRoute.UsernameLink -> findNavController().safeNavigate(R.id.action_appSettingsFragment_to_usernameLinkSettingsFragment)
-            else -> error("Unsupported route: ${route.javaClass.name}")
+            else -> {}
           }
         }
       }
@@ -157,21 +153,8 @@ class AppSettingsFragment : ComposeFragment(), Callbacks {
     viewModel.refreshDeprecatedOrUnregistered()
   }
 
-  override fun copyDonorBadgeSubscriberIdToClipboard() {
-    copySubscriberIdToClipboard(
-      subscriberType = InAppPaymentSubscriberRecord.Type.DONATION,
-      toastSuccessStringRes = R.string.AppSettingsFragment__copied_donor_subscriber_id_to_clipboard
-    )
-  }
-
-  override fun copyRemoteBackupsSubscriberIdToClipboard() {
-    copySubscriberIdToClipboard(
-      subscriberType = InAppPaymentSubscriberRecord.Type.BACKUP,
-      toastSuccessStringRes = R.string.AppSettingsFragment__copied_backups_subscriber_id_to_clipboard
-    )
-  }
-
   private fun copySubscriberIdToClipboard(
+
     subscriberType: InAppPaymentSubscriberRecord.Type,
     @StringRes toastSuccessStringRes: Int
   ) {
